@@ -9,6 +9,10 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f0f2f5;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -36,6 +40,18 @@
             text-align: center;
             font-weight: bold;
             font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header-logo {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: white;
         }
 
         .exit-button {
@@ -185,7 +201,8 @@
 
     <div class="chat-container">
         <div class="chat-header">
-            🤖 JATRO BPO Support
+            <img src="logo.jpg" alt="Logo" class="header-logo">
+            JATRO BPO Support
         </div>
         <div class="chat-box" id="chat-box">
         </div>
@@ -202,29 +219,69 @@
         const optionsContainer = document.getElementById('options-container');
 
         // Function to add a message to the chat interface
-        function addMessage(text, sender) {
-            if (sender === 'bot') {
-                const containerDiv = document.createElement('div');
-                containerDiv.classList.add('bot-message-container');
+        function addMessage(text, sender, animate = false) {
+            return new Promise(resolve => {
+                if (sender === 'bot') {
+                    const containerDiv = document.createElement('div');
+                    containerDiv.classList.add('bot-message-container');
 
-                const logoImg = document.createElement('img');
-                logoImg.src = 'logo.jpg';
-                logoImg.alt = 'Bot Logo';
-                logoImg.classList.add('bot-logo');
+                    const logoImg = document.createElement('img');
+                    logoImg.src = 'logo.jpg';
+                    logoImg.alt = 'Bot Logo';
+                    logoImg.classList.add('bot-logo');
 
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message', 'bot-message');
-                messageDiv.innerHTML = text;
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message', 'bot-message');
 
-                containerDiv.appendChild(logoImg);
-                containerDiv.appendChild(messageDiv);
-                chatBox.appendChild(containerDiv);
-            } else {
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message', 'user-message');
-                messageDiv.innerHTML = text;
-                chatBox.appendChild(messageDiv);
-            }
+                    containerDiv.appendChild(logoImg);
+                    containerDiv.appendChild(messageDiv);
+                    chatBox.appendChild(containerDiv);
+
+                    if (animate) {
+                        let i = 0;
+                        let currentHTML = "";
+                        const speed = 15; // ms per char
+
+                        function typeNext() {
+                            if (i < text.length) {
+                                // Fast-forward through HTML tags
+                                if (text.charAt(i) === '<') {
+                                    let tagEnd = text.indexOf('>', i);
+                                    if (tagEnd !== -1) {
+                                        currentHTML += text.substring(i, tagEnd + 1);
+                                        i = tagEnd + 1;
+                                    } else {
+                                        currentHTML += text.charAt(i);
+                                        i++;
+                                    }
+                                } else {
+                                    currentHTML += text.charAt(i);
+                                    i++;
+                                }
+
+                                messageDiv.innerHTML = currentHTML;
+                                chatBox.scrollTop = chatBox.scrollHeight;
+
+                                setTimeout(typeNext, speed);
+                            } else {
+                                resolve();
+                            }
+                        }
+                        typeNext();
+                    } else {
+                        messageDiv.innerHTML = text;
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                        resolve();
+                    }
+                } else {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message', 'user-message');
+                    messageDiv.innerHTML = text;
+                    chatBox.appendChild(messageDiv);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                    resolve();
+                }
+            });
         }
 
         function showTypingIndicator() {
@@ -262,17 +319,17 @@
 
             showTypingIndicator();
 
-            setTimeout(() => {
+            setTimeout(async () => {
                 removeTypingIndicator();
 
                 const stateData = botData[stateKey];
 
-                // 1. Show the bot's message
-                addMessage(stateData.message, 'bot');
+                // 1. Show the bot's message with typing animation
+                await addMessage(stateData.message, 'bot', true);
 
-                // 1b. If there's a follow-up message, show it in a new bubble
+                // 1b. If there's a follow-up message, show it in a new bubble with animation
                 if (stateData.message2) {
-                    addMessage(stateData.message2, 'bot');
+                    await addMessage(stateData.message2, 'bot', true);
                 }
 
                 // 2. Create the buttons for the user's choices
@@ -308,7 +365,7 @@
                 setTimeout(() => {
                     chatBox.scrollTop = chatBox.scrollHeight;
                 }, 50);
-            }, 1000); // 1 seconds delay
+            }, 800); // 0.8 second delay
         }
 
         // Start the chatbot by loading the initial state
