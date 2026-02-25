@@ -75,10 +75,31 @@
             font-size: 0.95em;
         }
 
+        .bot-message-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            align-self: flex-start;
+            max-width: 85%;
+        }
+
+        .bot-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+        }
+
+        .bot-message-container .message {
+            max-width: 100%;
+        }
+
         .bot-message {
             background-color: #e9ecef;
             color: #333;
-            align-self: flex-start;
             border-bottom-left-radius: 4px;
         }
 
@@ -128,6 +149,35 @@
         strong {
             color: #000;
         }
+
+        /* Typing Indicator Styles */
+        .dot {
+            animation: blink 1.4s infinite both;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 0.2;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.2;
+            }
+        }
     </style>
 </head>
 
@@ -153,63 +203,112 @@
 
         // Function to add a message to the chat interface
         function addMessage(text, sender) {
+            if (sender === 'bot') {
+                const containerDiv = document.createElement('div');
+                containerDiv.classList.add('bot-message-container');
+
+                const logoImg = document.createElement('img');
+                logoImg.src = 'logo.jpg';
+                logoImg.alt = 'Bot Logo';
+                logoImg.classList.add('bot-logo');
+
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'bot-message');
+                messageDiv.innerHTML = text;
+
+                containerDiv.appendChild(logoImg);
+                containerDiv.appendChild(messageDiv);
+                chatBox.appendChild(containerDiv);
+            } else {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'user-message');
+                messageDiv.innerHTML = text;
+                chatBox.appendChild(messageDiv);
+            }
+        }
+
+        function showTypingIndicator() {
+            const containerDiv = document.createElement('div');
+            containerDiv.classList.add('bot-message-container');
+            containerDiv.id = 'typing-indicator';
+
+            const logoImg = document.createElement('img');
+            logoImg.src = 'logo.jpg';
+            logoImg.alt = 'Bot Logo';
+            logoImg.classList.add('bot-logo');
+
             const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender === 'bot' ? 'bot-message' : 'user-message');
-            messageDiv.innerHTML = text; // Using innerHTML so <br> and <strong> tags work
-            chatBox.appendChild(messageDiv);
+            messageDiv.classList.add('message', 'bot-message');
+            messageDiv.innerHTML = '<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>';
+
+            containerDiv.appendChild(logoImg);
+            containerDiv.appendChild(messageDiv);
+            chatBox.appendChild(containerDiv);
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
         }
 
         // Function to load a specific state from the JSON data
         function loadState(stateKey) {
-            const stateData = botData[stateKey];
-
-            // Clear old options
+            // Clear old options immediately to prevent clicks
             optionsContainer.innerHTML = '';
 
-            // 1. Show the bot's message
-            addMessage(stateData.message, 'bot');
+            showTypingIndicator();
 
-            // 1b. If there's a follow-up message, show it in a new bubble
-            if (stateData.message2) {
-                addMessage(stateData.message2, 'bot');
-            }
-
-            // 2. Create the buttons for the user's choices
-            stateData.options.forEach(option => {
-                const button = document.createElement('button');
-                button.classList.add('option-button');
-                button.textContent = option.text;
-
-                // When a button is clicked...
-                button.onclick = () => {
-                    // Show what the user clicked as a message
-                    addMessage(option.text, 'user');
-
-                    // Disable buttons temporarily to prevent double-clicks
-                    optionsContainer.innerHTML = '';
-
-                    // Add a tiny delay to make it feel natural, then load next state
-                    setTimeout(() => {
-                        loadState(option.next_state);
-                    }, 400);
-                };
-
-                optionsContainer.appendChild(button);
-            });
-
-            // Only on the done page, add an Exit button to reset the chat
-            if (stateKey === "done") {
-                const exitButton = document.createElement('button');
-                exitButton.classList.add('exit-button');
-                exitButton.textContent = "✖ End Chat";
-                exitButton.onclick = resetChat;
-                optionsContainer.appendChild(exitButton);
-            }
-
-            // Scroll to bottom after the DOM has updated with new options
             setTimeout(() => {
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 50);
+                removeTypingIndicator();
+
+                const stateData = botData[stateKey];
+
+                // 1. Show the bot's message
+                addMessage(stateData.message, 'bot');
+
+                // 1b. If there's a follow-up message, show it in a new bubble
+                if (stateData.message2) {
+                    addMessage(stateData.message2, 'bot');
+                }
+
+                // 2. Create the buttons for the user's choices
+                stateData.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.classList.add('option-button');
+                    button.textContent = option.text;
+
+                    // When a button is clicked...
+                    button.onclick = () => {
+                        // Show what the user clicked as a message
+                        addMessage(option.text, 'user');
+
+                        // Disable buttons temporarily to prevent double-clicks
+                        optionsContainer.innerHTML = '';
+
+                        loadState(option.next_state);
+                    };
+
+                    optionsContainer.appendChild(button);
+                });
+
+                // Only on the done page, add an Exit button to reset the chat
+                if (stateKey === "done") {
+                    const exitButton = document.createElement('button');
+                    exitButton.classList.add('exit-button');
+                    exitButton.textContent = "✖ End Chat";
+                    exitButton.onclick = resetChat;
+                    optionsContainer.appendChild(exitButton);
+                }
+
+                // Scroll to bottom after the DOM has updated with new options
+                setTimeout(() => {
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }, 50);
+            }, 1000); // 1 seconds delay
         }
 
         // Start the chatbot by loading the initial state
