@@ -1,0 +1,289 @@
+{
+    "start": {
+        "message": "Welcome to Jatro BPO Accounts Support Portal.<br><br>Please select the client account you are transacting with:",
+        "options": [
+            {
+                "text": "1️⃣ Neighbourly Strata Management",
+                "next_state": "neighbourly_menu"
+            },
+            {
+                "text": "2️⃣ J&T Partners",
+                "next_state": "jt_menu"
+            }
+        ]
+    },
+    "neighbourly_menu": {
+        "message": "Welcome to the Neighbourly Strata Management Invoice Processing Assistant.<br>Please select your concern:",
+        "options": [
+            {
+                "text": "1️⃣ Process a New Invoice",
+                "next_state": "neigh_1"
+            },
+            {
+                "text": "2️⃣ Invoice requirements",
+                "next_state": "neigh_2"
+            },
+            {
+                "text": "3️⃣ Approval workflow",
+                "next_state": "neigh_3"
+            },
+            {
+                "text": "4️⃣ Payment processing steps",
+                "next_state": "neigh_4"
+            },
+            {
+                "text": "5️⃣ Common errors",
+                "next_state": "neigh_5"
+            },
+            {
+                "text": "6️⃣ Urgent or disputed invoice",
+                "next_state": "neigh_6"
+            },
+            {
+                "text": "7️⃣ Escalation",
+                "next_state": "neigh_7"
+            },
+            {
+                "text": "⬅️ Back to Client Selection",
+                "next_state": "start"
+            }
+        ]
+    },
+    "neigh_1": {
+        "message": "<strong>Steps to process:</strong><br><ul><li><strong>Step 1 – Verify Invoice:</strong> Supplier name matches system, ABN (if applicable), Invoice number & date, Correct property / client code, GST breakdown, Total amount.</li><li><strong>Step 2 – Check Supporting Documents:</strong> Approved work order or quote, Contract reference, Email approval.</li><li><strong>Step 3 – Encode in Accounting System:</strong> Enter supplier info, invoice number, dates, amounts, and property allocation, Check for duplicates.</li><li><strong>Step 4 – Attach Documents:</strong> Invoice PDF + approval email + supporting docs, Filename format: PropertyCode_Supplier_InvoiceNumber_Date.</li><li><strong>Step 5 – Submit for Approval:</strong> Route to Strata Manager, Status: Pending Approval.</li></ul>",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "neighbourly_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "neigh_2": {
+        "message": "<strong>Invoice must include:</strong><br><ul><li>Supplier legal name</li><li>ABN (AU suppliers)</li><li>Invoice number & date</li><li>Description of service</li><li>GST (if applicable)</li><li>Total amount</li><li>Bank details (first-time supplier)</li></ul><br><strong>Missing info?</strong> → Request correction before processing.",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "neighbourly_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "neigh_3": {
+        "message": "<strong>Approval Workflow:</strong><br><ol><li>Jatro BPO encodes invoice</li><li>Submit to Strata Manager</li><li>Manager approves</li><li>Forward to Finance for payment</li></ol><br><strong>Rejected?</strong> → Correct and resubmit.",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "neighbourly_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "neigh_4": {
+        "message": "<strong>Payment Processing:</strong><br><ul><li>Confirm due date</li><li>Verify bank details</li><li>Add to payment batch</li><li>Mark 'Scheduled for Payment'</li><li>After payment, mark 'Paid' and attach proof</li><li>Notify manager</li></ul>",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "neighbourly_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "neigh_5": {
+        "message": "<strong>Common Errors:</strong><br><ul><li>Duplicate invoice number</li><li>Wrong property code</li><li>Incorrect GST</li><li>Missing approval</li><li>Expired contract</li><li>Bank details mismatch</li></ul><br>Check before submission.",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "neighbourly_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "neigh_6": {
+        "message": "<strong>Urgent or Disputed Invoice:</strong><br><ul><li><strong>URGENT</strong> → Mark, notify manager, get approval</li><li><strong>DISPUTED</strong> → Flag, inform manager, wait for clarification</li></ul>",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "neighbourly_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "neigh_7": {
+        "message": "<strong>Escalation Levels:</strong><br><ul><li>Level 1: Team Leader</li><li>Level 2: Accounts Senior Team Leader</li><li>Level 3: Strata Manager</li></ul>",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "neighbourly_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "jt_menu": {
+        "message": "Welcome to the J&T Partners Invoice Processing Assistant.<br>Please select your concern:",
+        "options": [
+            {
+                "text": "1️⃣ Process a New Invoice",
+                "next_state": "jt_1"
+            },
+            {
+                "text": "2️⃣ Invoice requirements",
+                "next_state": "jt_2"
+            },
+            {
+                "text": "3️⃣ Approval workflow",
+                "next_state": "jt_3"
+            },
+            {
+                "text": "4️⃣ Payment processing steps",
+                "next_state": "jt_4"
+            },
+            {
+                "text": "5️⃣ Common errors",
+                "next_state": "jt_5"
+            },
+            {
+                "text": "6️⃣ Urgent or disputed invoice",
+                "next_state": "jt_6"
+            },
+            {
+                "text": "7️⃣ Escalation",
+                "next_state": "jt_7"
+            },
+            {
+                "text": "⬅️ Back to Client Selection",
+                "next_state": "start"
+            }
+        ]
+    },
+    "jt_1": {
+        "message": "<strong>Steps to process:</strong><br><ul><li><strong>Step 1 – Verify Invoice:</strong> Supplier matches system records, Invoice number & date, GST breakdown, Total amount.</li><li><strong>Step 2 – Supporting Documents:</strong> Work order / approved quote, Contract reference, Email approval.</li><li><strong>Step 3 – Encode in Accounting System:</strong> Enter supplier, invoice number, dates, amounts, expense account, client allocation. Check for duplicates.</li><li><strong>Step 4 – Attach Documents:</strong> Invoice + approval email + supporting docs. Filename: ClientCode_Supplier_InvoiceNumber_Date</li><li><strong>Step 5 – Submit for Approval:</strong> Route to assigned accountant. Status: Pending Approval</li></ul>",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "jt_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "jt_2": {
+        "message": "<strong>Invoice must include:</strong><br><ul><li>Supplier legal name</li><li>ABN (if AU supplier)</li><li>Invoice number & date</li><li>Service description</li><li>GST if applicable</li><li>Total payable amount</li><li>Bank details (if first-time supplier)</li></ul><br><strong>Incomplete?</strong> → Request correction.",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "jt_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "jt_3": {
+        "message": "<strong>Approval Workflow:</strong><br><ol><li>Jatro BPO encodes invoice</li><li>Submit to assigned accountant</li><li>Accountant reviews & approves</li><li>Payment scheduling</li></ol><br><strong>Rejected?</strong> → Correct & resubmit.",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "jt_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "jt_4": {
+        "message": "<strong>Payment Processing:</strong><br><ul><li>Verify due date & bank details</li><li>Include in payment batch</li><li>Status → Scheduled for Payment</li><li>Mark Paid & attach proof</li><li>Notify relevant accountant</li></ul>",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "jt_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "jt_5": {
+        "message": "<strong>Common Errors:</strong><br><ul><li>Duplicate invoice</li><li>Wrong client allocation</li><li>GST calculation errors</li><li>Missing approval</li><li>Expired contract</li><li>Bank details mismatch</li></ul>",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "jt_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "jt_6": {
+        "message": "<strong>Urgent or Disputed Invoice:</strong><br><ul><li><strong>URGENT</strong> → Mark, notify accountant, confirm approval</li><li><strong>DISPUTED</strong> → Flag, inform accountant, await clarification</li></ul>",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "jt_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "jt_7": {
+        "message": "<strong>Escalation Levels:</strong><br><ul><li>Level 1: Assigned Accountant</li><li>Level 2: Team Leader</li><li>Level 3: Senior Accounts Team Leader</li></ul>",
+        "message2": "Do you have any concern?",
+        "options": [
+            {
+                "text": "Yes",
+                "next_state": "jt_menu"
+            },
+            {
+                "text": "No",
+                "next_state": "done"
+            }
+        ]
+    },
+    "done": {
+        "message": "Thank you for using Jatro BPO Support Portal! Have a great day.",
+        "options": []
+    }
+}

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jatro BPO Support Bot</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #dbae5f;
+            color: white;
+            padding: 16px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .exit-button {
+            background-color: #f8f9fa;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            padding: 10px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.95em;
+            text-align: center;
+            transition: all 0.2s;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .exit-button:hover {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+            font-size: 0.95em;
+        }
+
+        .bot-message {
+            background-color: #e9ecef;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user-message {
+            background-color: #dbae5f;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .options-container {
+            padding: 16px;
+            background: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 50%;
+            overflow-y: auto;
+        }
+
+        .option-button {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #dbae5f;
+            padding: 10px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.95em;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .option-button:hover {
+            background-color: #dbae5f;
+            color: white;
+            border-color: #dbae5f;
+        }
+
+        /* Styling for the HTML formatted text in JSON */
+        ul {
+            margin-top: 8px;
+            margin-bottom: 8px;
+            padding-left: 20px;
+        }
+
+        strong {
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            🤖 JATRO BPO Support
+        </div>
+        <div class="chat-box" id="chat-box">
+        </div>
+        <div class="options-container" id="options-container">
+        </div>
+    </div>
+
+    <script>
+        // --- 1. THE DATA ---
+        let botData = {};
+
+        // --- 2. THE LOGIC (JavaScript) ---
+        const chatBox = document.getElementById('chat-box');
+        const optionsContainer = document.getElementById('options-container');
+
+        // Function to add a message to the chat interface
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender === 'bot' ? 'bot-message' : 'user-message');
+            messageDiv.innerHTML = text; // Using innerHTML so <br> and <strong> tags work
+            chatBox.appendChild(messageDiv);
+        }
+
+        // Function to load a specific state from the JSON data
+        function loadState(stateKey) {
+            const stateData = botData[stateKey];
+
+            // Clear old options
+            optionsContainer.innerHTML = '';
+
+            // 1. Show the bot's message
+            addMessage(stateData.message, 'bot');
+
+            // 1b. If there's a follow-up message, show it in a new bubble
+            if (stateData.message2) {
+                addMessage(stateData.message2, 'bot');
+            }
+
+            // 2. Create the buttons for the user's choices
+            stateData.options.forEach(option => {
+                const button = document.createElement('button');
+                button.classList.add('option-button');
+                button.textContent = option.text;
+
+                // When a button is clicked...
+                button.onclick = () => {
+                    // Show what the user clicked as a message
+                    addMessage(option.text, 'user');
+
+                    // Disable buttons temporarily to prevent double-clicks
+                    optionsContainer.innerHTML = '';
+
+                    // Add a tiny delay to make it feel natural, then load next state
+                    setTimeout(() => {
+                        loadState(option.next_state);
+                    }, 400);
+                };
+
+                optionsContainer.appendChild(button);
+            });
+
+            // Only on the done page, add an Exit button to reset the chat
+            if (stateKey === "done") {
+                const exitButton = document.createElement('button');
+                exitButton.classList.add('exit-button');
+                exitButton.textContent = "✖ End Chat";
+                exitButton.onclick = resetChat;
+                optionsContainer.appendChild(exitButton);
+            }
+
+            // Scroll to bottom after the DOM has updated with new options
+            setTimeout(() => {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 50);
+        }
+
+        // Start the chatbot by loading the initial state
+        window.onload = async () => {
+            try {
+                const response = await fetch('data.json');
+                botData = await response.json();
+                loadState("start");
+            } catch (error) {
+                console.error("Error loading chat data:", error);
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'bot-message');
+                messageDiv.innerHTML = "Sorry, I couldn't load the knowledge base.";
+                chatBox.appendChild(messageDiv);
+            }
+        };
+
+        // Function to reset the chat back to the beginning
+        function resetChat() {
+            // Clear all messages
+            chatBox.innerHTML = '';
+            // Load the initial state
+            loadState("start");
+        }
+    </script>
+
+</body>
+
+</html>
